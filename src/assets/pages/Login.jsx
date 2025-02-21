@@ -28,6 +28,7 @@ export default function Login() {
       const response = await axios.post(`${apiBase}/v2/admin/signin`, userData);
       const { token, expired } = response.data;
       document.cookie = `loginToken=${token}; expires=${new Date(expired)}`;
+      axios.defaults.headers.common["Authorization"] = token;
       navigate("/admin/products");
     } catch (error) {
       console.log(error.response.data.message);

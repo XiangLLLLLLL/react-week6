@@ -1,5 +1,6 @@
 import { Outlet } from "react-router";
 import Navbar from "./components/Navbar";
+import Toast from "./components/Toast";
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <div className="container mt-3">
         <Outlet />
       </div>
+      <Toast />
     </>
   );
 }

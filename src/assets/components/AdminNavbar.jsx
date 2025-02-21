@@ -1,5 +1,37 @@
+import axios from "axios";
+import { useDispatch } from "react-redux";
 import { NavLink } from "react-router";
+import { pushMessage } from "../slice/toastSlice";
+import { useNavigate } from "react-router";
+const apiBase = import.meta.env.VITE_API_BASE;
 export default function AdminNavbar() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post(`${apiBase}/v2/logout`);
+      dispatch(pushMessage({ success: response.data.success, text: response.data.message }));
+      document.cookie = "loginToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+      navigate("/login");
+    } catch (error) {
+      const { success, message } = error.response.data;
+      dispatch(
+        pushMessage({
+          success,
+          text: Array.isArray(message)
+            ? message.map((item, index) => {
+                return (
+                  <span key={index}>
+                    {item}！
+                    <br />
+                  </span>
+                );
+              })
+            : message,
+        })
+      );
+    }
+  };
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
@@ -19,6 +51,11 @@ export default function AdminNavbar() {
               <NavLink to="/" className="nav-link text-primary fw-bolder">
                 回首頁
               </NavLink>
+            </li>
+            <li className="nav-item">
+              <button type="button" className="btn btn-primary fw-bolder" onClick={() => handleLogout()}>
+                登出
+              </button>
             </li>
           </ul>
         </div>
