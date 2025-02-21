@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { pushMessage } from "../slice/toastSlice";
 import axios from "axios";
 import { useNavigate } from "react-router";
 const apiBase = import.meta.env.VITE_API_BASE;
@@ -9,6 +11,7 @@ export default function Login() {
     password: "",
   });
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const token = document.cookie.replace(/(?:(?:^|.*;\s*)loginToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
@@ -29,9 +32,25 @@ export default function Login() {
       const { token, expired } = response.data;
       document.cookie = `loginToken=${token}; expires=${new Date(expired)}`;
       axios.defaults.headers.common["Authorization"] = token;
+      dispatch(pushMessage({ success: response.data.success, text: response.data.message }));
       navigate("/admin/products");
     } catch (error) {
-      console.log(error.response.data.message);
+      const { success, message } = error.response.data;
+      dispatch(
+        pushMessage({
+          success,
+          text: Array.isArray(message)
+            ? message.map((item, index) => {
+                return (
+                  <span key={index}>
+                    {item}！
+                    <br />
+                  </span>
+                );
+              })
+            : message,
+        })
+      );
     }
   };
 

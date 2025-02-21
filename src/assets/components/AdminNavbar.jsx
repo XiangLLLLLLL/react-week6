@@ -11,9 +11,8 @@ export default function AdminNavbar() {
     try {
       const response = await axios.post(`${apiBase}/v2/logout`);
       dispatch(pushMessage({ success: response.data.success, text: response.data.message }));
-      document.cookie = "loginToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+      document.cookie = "loginToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/react-week6";
       navigate("/login");
-      window.location.reload();
     } catch (error) {
       const { success, message } = error.response.data;
       dispatch(
